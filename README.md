@@ -13,16 +13,17 @@ Use command line to run the program
 
 List of command
 
-1. To parse csv file and store in db 
-php user_upload --file [fileName] -u [MySQLUsername] -h [MySQLHost]
+1. To parse csv file and store in db <br />
+php user_upload.php --file [fileName] -u [MySQLUsername] -h [MySQLHost]<br />
 note: if the Default MySQLPassword is not empty, -p [MySQLPassword] is required 
-2. To parse only without saving in db
-php user_upload --file [fileName] --dry_run
 
-3. To parse create table
-php user_upload --create_table -u [MySQLUsername] -h [MySQLHost]
+2. To parse only without saving in db<br />
+php user_upload.php --file [fileName] --dry_run
+
+3. To parse create table<br />
+php user_upload.php --create_table -u [MySQLUsername] -h [MySQLHost]<br />
 note: if the Default MySQLPassword id not empty, -p [MySQLPassword] is required 
 
-4. For help
-php user_upload --help
+4. For help<br />
+php user_upload.php --help
 
