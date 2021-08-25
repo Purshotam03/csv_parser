@@ -11,19 +11,18 @@ php 7.2.x or greater, MySQL , Database Name users
 # How to use
 Use command line to run the program
 
-#List of command
+List of command
 
-###1. To parse csv file and store in db 
-####php user_upload --file [fileName] -u [MySQLUsername] -h [MySQLHost]
-######note: if the Default MySQLPassword is not empty, -p [MySQLPassword] is required 
+1. To parse csv file and store in db 
+php user_upload --file [fileName] -u [MySQLUsername] -h [MySQLHost]
+note: if the Default MySQLPassword is not empty, -p [MySQLPassword] is required 
+2. To parse only without saving in db
+php user_upload --file [fileName] --dry_run
 
-###2. To parse only without saving in db
-####php user_upload --file [fileName] --dry_run
+3. To parse create table
+php user_upload --create_table -u [MySQLUsername] -h [MySQLHost]
+note: if the Default MySQLPassword id not empty, -p [MySQLPassword] is required 
 
-###3. To parse create table
-####php user_upload --create_table -u [MySQLUsername] -h [MySQLHost]
-######note: if the Default MySQLPassword id not empty, -p [MySQLPassword] is required 
-
-###4. For help
-####php user_upload --help
+4. For help
+php user_upload --help
 
