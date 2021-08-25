@@ -137,6 +137,21 @@ if(!$dryRun){
     }
 }
 
+parseCSV($fileCSV);
+
+function parseCSV($fileCSV){
+    $file = fopen($fileCSV, 'r');
+    //ignoring first line
+    $firstLine= fgetcsv($file);
+
+    while ($row = fgetcsv($file)) {
+        $name = ucfirst(strtolower($row[0]));
+        $surname = ucfirst(strtolower($row[1]));
+        $email= strtolower($row[1]);
+    }
+}
+
+
 
 function displayOptions()
 {
