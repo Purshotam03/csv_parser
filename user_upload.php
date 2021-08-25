@@ -89,6 +89,14 @@ if($dryRun){
     }
 }
 
+//if the user select dry_run with file name
+if($dryRun&&!($fileCSV=="")){
+    //connection is not needed for dry run
+    parseCSV($fileCSV, true, '');
+    die;
+}
+
+
 //if the user input file name with out username and host
 if(!($fileCSV=="")&($username==""|| $hostName=="")){
     echo "The parameters Username, Password and Host are required.\n";
@@ -96,10 +104,11 @@ if(!($fileCSV=="")&($username==""|| $hostName=="")){
     die();
 }
 
-//if username host and password is present, make connection to database
+//if username, host and password is present, make connection to database
 //assuming that the user have users database
 $connection = "";
 $dbName = "users";
+//assuming that the default password is empty
 if(!($username==""|| $hostName=="")){
     $connection = mysqli_connect($hostName, $username, $password, $dbName);
     // Check connection
@@ -131,24 +140,51 @@ if(!$dryRun){
         echo "Error creating table: " . $connection->error . "\n";
         die();
     }
-    //if the user select create table with out file
-    if($fileCSV==""){
+    //if the user select create table option only
+    if($createTable){
         die();
     }
 }
 
-parseCSV($fileCSV);
+parseCSV($fileCSV,$dryRun,$connection);
 
-function parseCSV($fileCSV){
+function parseCSV($fileCSV,$dryRun,$connection){
     $file = fopen($fileCSV, 'r');
-    //ignoring first line
-    $firstLine= fgetcsv($file);
+    //Check if the file is valid or not
+    if($file){
+        //ignoring first line
+        $firstLine= fgetcsv($file);
 
-    while ($row = fgetcsv($file)) {
-        $name = ucfirst(strtolower($row[0]));
-        $surname = ucfirst(strtolower($row[1]));
-        $email= strtolower($row[1]);
+        echo "Record Details____\n\n";
+        while ($row = fgetcsv($file)) {
+            $name = ucfirst(strtolower(trim($row[0])));
+            $surname = ucfirst(strtolower(trim($row[1])));
+            $email= strtolower(trim($row[2]));
+
+            //check if all the fields is not empty
+           if(!($name==""&&$surname==""&&$email=="")){
+                if (filter_var($email, FILTER_VALIDATE_EMAIL)){
+                    if (!$dryRun){
+                        // prepare and bind
+                        $stmt = $connection->prepare("INSERT INTO users (name, surname, email) VALUES (?, ?, ?)");
+                        if($stmt){
+                            $stmt->bind_param("sss", $name, $surname, $email);
+                            $stmt ->execute();
+                        }else{
+                            echo "ERROR: query prepare fail. " . $mysqli->error . "\n";
+                        }
+                        echo $name .", ". $surname .", ". $email . "\n";;
+                    } else {
+                        echo $name .", ". $surname .", ". $email . "\n";;
+                    }
+                } else {
+                    echo "ERROR: Invalid email. Record ignored: ".$name .", ". $surname .", ". $email . "\n";
+                }
+            }
+
+        }
     }
+
 }
 
 
