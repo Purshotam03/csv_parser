@@ -2,7 +2,6 @@
 
 // Variables to get options from users
 $fileCSV = "";
-$fileIncluded = false;
 $createTable = false;
 $dryRun = false;
 $username = "";
@@ -28,11 +27,11 @@ if (in_array("--file", $argv)) {
     if (isset($argv[$indexOfParameterFile + 1])) {
         $fileCSV = $argv[$indexOfParameterFile + 1];
         if (!(file_exists($fileCSV) && is_file($fileCSV))) {
-            echo("Invalid file name provided\n");
+            echo("Invalid file provided\n");
             die();
         }
     } else {
-        echo "Provide File Name";
+        echo "Please Provide File Name\n";
         die();
     }
 }
@@ -77,7 +76,7 @@ if (in_array("-h", $argv)) {
 
 //if the user selects create_table option only
 if($createTable&($username=="" || $hostName=="")){
-    echo "The parameters Username and Host are required. Please try again.\n";
+    echo "The parameters Username and Host are required.\n";
     displayOptions();
     die();
 }
@@ -91,10 +90,51 @@ if($dryRun){
 }
 
 //if the user input file name with out username and host
-if(!($fileCSV=="")&($username=="" || $hostName=="")){
-    echo "The parameters Username and Host are required. Please try again.\n";
+if(!($fileCSV=="")&($username==""|| $hostName=="")){
+    echo "The parameters Username, Password and Host are required.\n";
     displayOptions();
     die();
+}
+
+//if username host and password is present, make connection to database
+//assuming that the user have users database
+$connection = "";
+$dbName = "users";
+if(!($username==""|| $hostName=="")){
+    $connection = mysqli_connect($hostName, $username, $password, $dbName);
+    // Check connection
+    if (!$connection) {
+        echo(" Connection failed: ". mysqli_connect_errno() . "\n");
+        die();
+    };
+}
+
+//if the user does not select dry run
+if(!$dryRun){
+    //Drop the table if similar name table is there in database
+    $sql ="DROP TABLE IF EXISTS users.users";
+    if(!$connection->query($sql)){
+        echo "Error: " . $connection->error . "\n";
+        die();
+    };
+    // Create table users with the attribute to store the data from csv
+    $sql = "CREATE TABLE if not exists users (
+				name VARCHAR(255),
+				surname VARCHAR(255),
+				email VARCHAR(255) NOT NULL,
+				UNIQUE KEY(email)
+				)";
+
+    if ($connection->query($sql)) {
+        echo "Created Table Users  Successfully\n";
+    } else {
+        echo "Error creating table: " . $connection->error . "\n";
+        die();
+    }
+    //if the user select create table with out file
+    if($fileCSV==""){
+        die();
+    }
 }
 
 
